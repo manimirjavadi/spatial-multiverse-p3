@@ -55,10 +55,10 @@ elif input_format in ['graph', 'pbtxt']:
 # Make a session for the frozen graph
 tf.import_graph_def(output_graph_def)
 frz_sess = tf.Session()
-print()
+print
 
 summary_filename = model + '.node_list.final'
-print('Writing a graph summary to ' + summary_filename)
+print 'Writing a graph summary to ' + summary_filename
 utils.write_summary_file(summary_filename, frz_sess, output_graph_def, imported=True)
 
 
@@ -655,7 +655,7 @@ while(True):
         name_to_tmpvar[node.name] = tmpvar
         assert num_input_channels in [1,3]
         host_before_accel += '    val ' + tmpvar + ' = (0::' + ', 0::'.join(output_dims) + ')'
-        assert node.input[1] in list(extra_paddings.keys())
+        assert node.input[1] in extra_paddings.keys()
         padding = int(extra_paddings[node.input[1]][2])
         start = str(padding)
         end   = str(int(output_dims[1]) - padding)
@@ -671,7 +671,7 @@ while(True):
   if node.op in ops_to_skip:
     # Skip this op by short-circuiting names
     # Reshape also short-circuits below when 1D to 1D
-    if node.input[0] in list(name_to_tmpvar.keys()):
+    if node.input[0] in name_to_tmpvar.keys():
       name_to_tmpvar[node.name] = name_to_tmpvar[node.input[0]]
     if node.op == 'Softmax':
       processed_softmax = True
@@ -701,11 +701,11 @@ while(True):
     for input in node.input:
       if ':' in input:
         input = ''.join(input.split(':')[:-1])
-      if input in list(name_to_tmpvar.keys()):
+      if input in name_to_tmpvar.keys():
         node_tmpvar_inputs.append(name_to_tmpvar[input])
       else:
         # node_tmpvar_inputs.append(input)
-        print('ERROR: Could not get input tmpvar for node ' + node.name + ', input ' + input)
+        print 'ERROR: Could not get input tmpvar for node ' + node.name + ', input ' + input
         assert False
     return node_tmpvar_inputs
   
@@ -753,7 +753,7 @@ while(True):
     return out_height, out_width, out_size, strides, padding
     
   def get_reshape_string(name):
-    if name in list(tmpvar_to_reshape_string.keys()):
+    if name in tmpvar_to_reshape_string.keys():
       reshape_string = '.reshape(' + tmpvar_to_reshape_string[name] + ')'
       if len(reshape_string.split(',')) > 1:
         return reshape_string
@@ -820,7 +820,7 @@ while(True):
       reuse_schedule[op_name] = []
       # Add args map for this function as well
       new_map = {}
-      for arg in list(def_arg_values.keys()):
+      for arg in def_arg_values.keys():
         new_map[arg] = []
       reuse_args[op_name] = new_map
       
@@ -838,7 +838,7 @@ while(True):
     # Now register this occurence of the layer in the entry
         
     # LUTs can also be local to the def
-    for arg in list(def_arg_values.keys()):
+    for arg in def_arg_values.keys():
       # if def_arg_values[arg]:
       reuse_args[op_name][arg].append(def_arg_values[arg])
       
@@ -859,7 +859,7 @@ while(True):
     global reuse_layer_to_IP
     global reuse_layer_to_kxk
   
-    if op_name not in list(reuse_layer_to_ops.keys()):
+    if op_name not in reuse_layer_to_ops.keys():
       reuse_layer_to_ops[op_name] = 0
     reuse_layer_to_ops[op_name] += total_ops
     reuse_layer_to_IP[op_name] = ip
@@ -2134,7 +2134,7 @@ while(True):
     out_height, out_width, out_size, strides, padding = get_output_dim(node, kernel_dims_str, data_dims_str, kernel_dims_str[3])
     final_out_size = out_size
     
-    if node.input[0] in list(extra_paddings.keys()):
+    if node.input[0] in extra_paddings.keys():
       data_dims_str = unpadded_dims[node.input[0]]
       previous_paddings = extra_paddings[node.input[0]]
       # Handle cases of tf.pad
@@ -2157,7 +2157,7 @@ while(True):
           supported = True
           padding = str(previous_paddings[2])
       if not supported:
-        print('Currently this pad is not supported')
+        print 'Currently this pad is not supported'
         assert False
 
     # If the data is an input, do a setMem
@@ -2520,7 +2520,7 @@ while(True):
       if reuse:
         reuse_tmp_dram_ordered.append(tmpvar)
         reuse_tmp_dram_dims[tmpvar] = out_size_align_last
-        if tmpvar_inputs[0] not in list(reuse_tmp_dram_children.keys()):
+        if tmpvar_inputs[0] not in reuse_tmp_dram_children.keys():
           reuse_tmp_dram_children[tmpvar_inputs[0]] = []
         reuse_tmp_dram_children[tmpvar_inputs[0]].append(tmpvar)
         reuse_tmp_dram_parents[tmpvar] = [tmpvar_inputs[0]]
@@ -2550,7 +2550,7 @@ while(True):
     final_out_size = out_size
     
     # If these asserts fail, copy the relevant code from Conv2D above
-    assert node.input[0] not in list(extra_paddings.keys())
+    assert node.input[0] not in extra_paddings.keys()
     assert not tmpvar_inputs[0][0] == 'i'
     assert conv_input_output_from_DRAM
     assert reuse
@@ -2715,7 +2715,7 @@ while(True):
       if reuse:
         reuse_tmp_dram_ordered.append(tmpvar)
         reuse_tmp_dram_dims[tmpvar] = out_size_align_last
-        if tmpvar_inputs[0] not in list(reuse_tmp_dram_children.keys()):
+        if tmpvar_inputs[0] not in reuse_tmp_dram_children.keys():
           reuse_tmp_dram_children[tmpvar_inputs[0]] = []
         reuse_tmp_dram_children[tmpvar_inputs[0]].append(tmpvar)
         reuse_tmp_dram_parents[tmpvar] = [tmpvar_inputs[0]]
@@ -2731,9 +2731,9 @@ while(True):
     data_dims_str = get_data_dims_str(node, frz_sess)
     
     reshape_dims = tensor_util.MakeNdarray(name_to_node[node.input[1]].attr['value'].tensor).tolist()
-    print('Reshape with target dims ' + str( reshape_dims ) + ', input dims ' + str(data_dims_str))
+    print 'Reshape with target dims ' + str( reshape_dims ) + ', input dims ' + str(data_dims_str)
     
-    if node.input[0] in list(name_to_node.keys()) and name_to_node[node.input[0]].op in input_ops:
+    if node.input[0] in name_to_node.keys() and name_to_node[node.input[0]].op in input_ops:
       input_name = tmpvar_inputs[0]
       assert len(reshape_dims) in [1,2,4]
       name_to_tmpvar[node.name] = tmpvar_inputs[0]
@@ -2897,9 +2897,9 @@ while(True):
       if reuse:
         reuse_tmp_dram_ordered.append(tmpvar)
         reuse_tmp_dram_dims[tmpvar] = out_size_align_last
-        if tmpvar_inputs[0] not in list(reuse_tmp_dram_children.keys()):
+        if tmpvar_inputs[0] not in reuse_tmp_dram_children.keys():
           reuse_tmp_dram_children[tmpvar_inputs[0]] = []
-        if tmpvar_inputs[1] not in list(reuse_tmp_dram_children.keys()):
+        if tmpvar_inputs[1] not in reuse_tmp_dram_children.keys():
           reuse_tmp_dram_children[tmpvar_inputs[1]] = []
         reuse_tmp_dram_children[tmpvar_inputs[0]].append(tmpvar)
         reuse_tmp_dram_children[tmpvar_inputs[1]].append(tmpvar)
@@ -3162,7 +3162,7 @@ if reuse and reuse_tmp_dram_ordered:
   # Count the number of children
   num_children = {}
   for dram in reuse_tmp_dram_ordered:
-    if dram in list(reuse_tmp_dram_children.keys()):
+    if dram in reuse_tmp_dram_children.keys():
       # print '#children of ' + dram + ' = ' + str(len(reuse_tmp_dram_children[dram]))
       num_children[dram] = len(reuse_tmp_dram_children[dram])
 
@@ -3172,7 +3172,7 @@ if reuse and reuse_tmp_dram_ordered:
     reuse_tmp_dram_id[dram] = get_next_available_reused_DRAM()
     # Now check if all your parents are done. If so, release them.
     for parent in reuse_tmp_dram_parents[dram]:
-      if parent in list(num_children.keys()):  # First DRAM not in tmp DRAM, so no need to release
+      if parent in num_children.keys():  # First DRAM not in tmp DRAM, so no need to release
         assert num_children[parent] >= 1
         num_children[parent] -= 1
         if num_children[parent] == 0:
@@ -3186,9 +3186,9 @@ if reuse and reuse_tmp_dram_ordered:
   reuse_layer_list_unique = set(reuse_layer_list)
   for layer in reuse_layer_list_unique:
     reuse_args[layer]['store_idx : Int'] = []
-    if 'load_idx_0 : Int' in list(reuse_args[layer].keys()):
+    if 'load_idx_0 : Int' in reuse_args[layer].keys():
       reuse_args[layer]['load_idx_0 : Int'] = []
-    if 'load_idx_1 : Int' in list(reuse_args[layer].keys()):
+    if 'load_idx_1 : Int' in reuse_args[layer].keys():
       reuse_args[layer]['load_idx_1 : Int'] = []
   idx = 0
   for layer in reuse_layer_list:
@@ -3197,9 +3197,9 @@ if reuse and reuse_tmp_dram_ordered:
     dram = reuse_tmp_dram_ordered[idx+1]
     idx += 1
     reuse_args[layer]['store_idx : Int'].append(str(reuse_tmp_dram_id[dram]))
-    if 'load_idx_0 : Int' in list(reuse_args[layer].keys()):
+    if 'load_idx_0 : Int' in reuse_args[layer].keys():
       reuse_args[layer]['load_idx_0 : Int'].append(str(reuse_tmp_dram_id[reuse_tmp_dram_parents[dram][0]]))
-    if 'load_idx_1 : Int' in list(reuse_args[layer].keys()):
+    if 'load_idx_1 : Int' in reuse_args[layer].keys():
       reuse_args[layer]['load_idx_1 : Int'].append(str(reuse_tmp_dram_id[reuse_tmp_dram_parents[dram][1]]))
 
   # Find the largest data dimension
@@ -3252,8 +3252,8 @@ if include_sigmoid_initialization:
 # ========================================================================================================
 
 # For reuse weights
-for layer in list(reuse_weight_dram.keys()):
-  for dram in list(reuse_weight_dram[layer].keys()):
+for layer in reuse_weight_dram.keys():
+  for dram in reuse_weight_dram[layer].keys():
     # Concatenate all the weights into one large weight
     # First, get the number of dimensions of these DRAMs
     num_dims = None
@@ -3415,7 +3415,7 @@ for layer in list(reuse_weight_dram.keys()):
         dims = tmpvar_to_reshape_string[const].split(',')
         inner_dim = dims[1]
         outer_dim = dims[0]
-        if inner_dim not in list(in_to_out_map.keys()):
+        if inner_dim not in in_to_out_map.keys():
           in_to_out_map[inner_dim] = outer_dim
         elif in_to_out_map[inner_dim] != outer_dim:
           # In this case, rather than a constant number of out channels for a given number
@@ -3556,7 +3556,7 @@ for layer in list(reuse_weight_dram.keys()):
 weight_mem_declarations += "\n"
 
 # For non-reuse weights
-for const in list(constants_to_write_to_disk.keys()):
+for const in constants_to_write_to_disk.keys():
   if const not in weight_files_to_concat:
     # Get the const which needs to be written to disk
     node = constants_to_write_to_disk[const]
@@ -3595,7 +3595,7 @@ if reuse_FC:
   layer = reuse_FC_name
   max_bias_size = 0
   max_cols = 0
-  for dram in list(reuse_fc_weight_dram[layer].keys()):
+  for dram in reuse_fc_weight_dram[layer].keys():
     
     # Concatenate the weights
     # First, get the number of dimensions of these DRAMs
@@ -3748,12 +3748,12 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
   default_arg_type = { 'Int' : '-1', 'Boolean' : 'false' }
   for layer in reuse_layer_list_unique:
     optimize_arg_to_const[layer] = {}
-    for arg in list(reuse_args[layer].keys()):
+    for arg in reuse_args[layer].keys():
       dtype = arg.split(':')[-1].strip()
       # Deal with MAX later, since those can be optimized to be constants
       if 'MAX__' in arg:
         assert dtype == 'Int'
-        optimize_arg_to_const[layer][arg] = str(max(list(map(int, reuse_args[layer][arg]))))
+        optimize_arg_to_const[layer][arg] = str(max(map(int, reuse_args[layer][arg])))
         continue
       # Next check if this always has the same value
       elif len(set(reuse_args[layer][arg])) == 1:
@@ -3776,15 +3776,15 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
     for layer in reuse_layer_list_unique:
       # If this arg is only used in one layer, excluding layers where it is optimized to
       # a constant, then move it inside the check
-      if arg in list(reuse_args[layer].keys()) and arg not in list(optimize_arg_to_const[layer].keys()):
+      if arg in reuse_args[layer].keys() and arg not in optimize_arg_to_const[layer].keys():
         layer_with_arg = layer
         num_layers_with_this_arg += 1
     if num_layers_with_this_arg == 1:
       assert layer_with_arg
       args_used_by_one_layer[arg] = layer_with_arg
   
-  for arg in list(arg_map_combined.keys()):
-    if arg not in list(args_used_by_one_layer.keys()):
+  for arg in arg_map_combined.keys():
+    if arg not in args_used_by_one_layer.keys():
       reuse_loop += '''
         val ''' + arg.split(':')[0].strip() + '''_args = LUT[''' + arg_types[arg] + '''](''' + str(num_layers) + ''')(''' +  \
         ', '.join(arg_map_combined[arg]) + ''')'''
@@ -3798,7 +3798,7 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
   for layer in reuse_layer_list_unique:
     arg_list_LUTs = []
     for arg in sorted(reuse_args[layer].keys()):
-      if arg in list(optimize_arg_to_const[layer].keys()):
+      if arg in optimize_arg_to_const[layer].keys():
         arg_list_LUTs.append(optimize_arg_to_const[layer][arg])
       else:
         arg_list_LUTs.append(arg.split(':')[0].strip() + '_args(L)')
@@ -3815,7 +3815,7 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
     else:
       reuse_loop += '''
           } else if (check_''' + layer + '''(L)) {'''
-    for arg in list(args_used_by_one_layer.keys()):
+    for arg in args_used_by_one_layer.keys():
       if args_used_by_one_layer[arg] == layer:
         reuse_loop += '''
             val ''' + arg.split(':')[0].strip() + '''_args = LUT[''' + arg_types[arg] + '''](''' + str(num_layers) + ''')(''' +  \
@@ -3830,10 +3830,10 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
 
   # If store_idx LUT was optimized away, replace accesses to it with the corresponding constants
   store_arg = 'store_idx : Int'
-  if (store_arg not in list(arg_map_combined.keys())) or (store_arg in list(args_used_by_one_layer.keys())):
+  if (store_arg not in arg_map_combined.keys()) or (store_arg in args_used_by_one_layer.keys()):
     store_LUT = [0]*num_layers
     for layer in reuse_layer_list_unique:
-      if store_arg in list(reuse_args[layer].keys()):
+      if store_arg in reuse_args[layer].keys():
         for idx, value in enumerate(reuse_args[layer][store_arg]):
           state = int(reuse_schedule[layer][idx])
           store_LUT[state] = reuse_args[layer][store_arg][idx]
@@ -3846,29 +3846,29 @@ if reuse and reuse_layer_list:  # If there is at least one reused processor
 # ========================================================================================================
 # Static Model for DSP Assignment
 # ========================================================================================================
-if list(reuse_layer_to_ops.keys()):
+if reuse_layer_to_ops.keys():
   total_ops = 0
   max_name_length = 0
-  for layer in list(reuse_layer_to_ops.keys()):
+  for layer in reuse_layer_to_ops.keys():
     total_ops += reuse_layer_to_ops[layer]
     max_name_length = max(max_name_length, len(layer))
-  print()
+  print
   
   dsp_util_target = 1.0
   mults_to_assign = int( dsp_util_target * float(device_params['num_dsps']) / float( device_params['dsp_usage_per_32b_mul'] ) )
   
-  print('MAC % by op:')
-  for layer in list(reuse_layer_to_ops.keys()):
+  print 'MAC % by op:'
+  for layer in reuse_layer_to_ops.keys():
     spaces = ' '*(max_name_length - len(layer)) + ' : '
     percent_for_op = float(reuse_layer_to_ops[layer])/float(total_ops)
-    print('  ' + layer + spaces + str(100.*percent_for_op)[0:5] + '%  (' + str(reuse_layer_to_ops[layer]) + ' / ' + str(total_ops) + ')')
-    if layer in list(reuse_layer_to_IP.keys()) and layer in list(reuse_layer_to_kxk.keys()):
+    print '  ' + layer + spaces + str(100.*percent_for_op)[0:5] + '%  (' + str(reuse_layer_to_ops[layer]) + ' / ' + str(total_ops) + ')'
+    if layer in reuse_layer_to_IP.keys() and layer in reuse_layer_to_kxk.keys():
       # Spatial currently has JVM code size errors for large outer pars. The line below should be used here:
       # par_alloc = str(closest_pow_2(mults_to_assign * percent_for_op / reuse_layer_to_IP[layer] / reuse_layer_to_kxk[layer]))
       # But until that is fixed, limiting the outer par to 8 here:
       par_alloc = str(min(8, closest_pow_2(mults_to_assign * percent_for_op / reuse_layer_to_IP[layer] / reuse_layer_to_kxk[layer])))
       file_opening = file_opening.replace(layer + '_OP', par_alloc)
-  print()
+  print
   
 
 # ========================================================================================================
@@ -3950,15 +3950,15 @@ output_fname = app_name + '.scala'
 f = open(output_fname, 'w')
 f.write(spatial_output + "\n")
 f.close()
-print('Output written to ' + output_fname)
-print('Compile and synthesize in Spatial by placing this file in spatial/test/spatial/tests/apps/')
-print('and running the following command in the spatial-dnn directory:')
+print 'Output written to ' + output_fname
+print 'Compile and synthesize in Spatial by placing this file in spatial/test/spatial/tests/apps/'
+print 'and running the following command in the spatial-dnn directory:'
 if use_relu6:
-  print('  $ bin/spatial ' + app_name + ' --synth --noBindParallels --fpga=AWS_F1 && cd gen/' + app_name + ' && make aws-F1')
+  print '  $ bin/spatial ' + app_name + ' --synth --noBindParallels --fpga=AWS_F1 && cd gen/' + app_name + ' && make aws-F1'
 else:
-  print('  $ bin/spatial ' + app_name + ' --synth --forceFuseFMA --noBindParallels --fpga=AWS_F1 && cd gen/' + app_name + ' && make aws-F1')
-print() 
-print('The format for inputs is currently .csv. E.g. to convert an image file to .csv, use data/img_to_csv.py')
+  print '  $ bin/spatial ' + app_name + ' --synth --forceFuseFMA --noBindParallels --fpga=AWS_F1 && cd gen/' + app_name + ' && make aws-F1'
+print 
+print 'The format for inputs is currently .csv. E.g. to convert an image file to .csv, use data/img_to_csv.py'
 
 # Close the tf session with the frozen graph
 frz_sess.close()

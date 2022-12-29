@@ -143,13 +143,13 @@ def get_inference_graph(sess, output_node_name):
 with tf.Session(graph=tf.Graph()) as sess:
 
   if input_format == 'saved_model':
-    print('Reading saved model from ' + model)
+    print 'Reading saved model from ' + model
     tf.saved_model.loader.load(sess, [tf.saved_model.tag_constants.SERVING], model)
     # Get the graph
     input_graph_def  = tf.get_default_graph().as_graph_def()
   else:
     assert input_format == 'checkpoint'
-    print('Reading ' + model + '.meta and ' + model + '.ckpt')  
+    print 'Reading ' + model + '.meta and ' + model + '.ckpt'  
     # Read the graph (in saver metadata) and the weights (in checkpoint)
     new_saver = tf.train.import_meta_graph(model + '.meta', clear_devices=True)    
     # Set the graph of the session
@@ -160,9 +160,9 @@ with tf.Session(graph=tf.Graph()) as sess:
     # Get the graph
     input_graph_def  = sess.graph.as_graph_def(from_version=None, add_shapes=True)
 
-  print('# Nodes before Freeze:' + str(len(input_graph_def.node)))
+  print '# Nodes before Freeze:' + str(len(input_graph_def.node))
   summary_filename = output_dir + '/' + output_name + '.node_list.initial'
-  print('Writing a summary of the initial graph to ' + summary_filename)
+  print 'Writing a summary of the initial graph to ' + summary_filename
   utils.write_summary_file(summary_filename, sess, input_graph_def)
 
   # Freeze graph
@@ -171,17 +171,17 @@ with tf.Session(graph=tf.Graph()) as sess:
   # Save graph to file.
   model_file_full = output_dir + '/' + output_name + '.pb'
   if not os.path.isfile(model_file_full):
-    print('Writing frozen graph to ' + model_file_full)
+    print 'Writing frozen graph to ' + model_file_full
     tf.train.write_graph(output_graph_def, output_dir, output_name + '.pb', as_text=False)
     # with tf.gfile.GFile(model_file_full, "wb") as f:
     #   f.write(output_graph_def.SerializeToString())
   else:
-    print('Note: Tried writing frozen graph to ' + model_file_full + ', but file exists. Please move or delete that file')
+    print 'Note: Tried writing frozen graph to ' + model_file_full + ', but file exists. Please move or delete that file'
     sys.exit(0)
 
-  print('# Nodes after Freeze:' + str(len(output_graph_def.node)))
+  print '# Nodes after Freeze:' + str(len(output_graph_def.node))
   summary_filename = output_dir + '/' + output_name + '.node_list.frozen'
-  print('Writing a summary of the initial graph to ' + summary_filename)
+  print 'Writing a summary of the initial graph to ' + summary_filename
   utils.write_summary_file(summary_filename, sess, output_graph_def)
 
 
@@ -189,5 +189,5 @@ with tf.Session(graph=tf.Graph()) as sess:
 # Pointer to Next Step
 # ========================================================================================================
 
-print('Finished')
-print('==> Next step: optimize this graph using optimize_inference_graph.py')
+print 'Finished'
+print '==> Next step: optimize this graph using optimize_inference_graph.py'

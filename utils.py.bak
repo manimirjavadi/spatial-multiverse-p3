@@ -10,16 +10,16 @@ def get_args(argc, err_msg):
   if argc == 0:
     return None
   if len(sys.argv) != argc + 1:
-    print('Script usage:   $ python ' + err_msg)
+    print 'Script usage:   $ python ' + err_msg
     sys.exit(0)
   return sys.argv[1:]
 
 def error_exit(msg):
-  print("\n" + 'Message for user:' + "\n  " + msg + "\n" + 'Exiting' + "\n")
+  print "\n" + 'Message for user:' + "\n  " + msg + "\n" + 'Exiting' + "\n"
   sys.exit(0)
 
 def read_config_file(fname):
-  print('Reading config file: ' + fname)
+  print 'Reading config file: ' + fname
   f = open(fname)
   key_to_value = {}
   for line in f:

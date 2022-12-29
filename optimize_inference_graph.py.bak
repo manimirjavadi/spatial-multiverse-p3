@@ -95,6 +95,6 @@ optimize_graph(model_dir, model_name + '.pb',
 optimize_graph(model_dir, model_name + '_opt1.pb',
                transforms, [output_node], outname= model_name + '_opt2.pb')
 
-print('The optimized graph has been written to ' + model_no_ext + '_opt2.pb')
-print('==> Next step: generate Spatial for this optimized graph by running:')
-print('      $ python dnn_to_spatial.py ' + model_no_ext + '_opt2.pb')
+print 'The optimized graph has been written to ' + model_no_ext + '_opt2.pb'
+print '==> Next step: generate Spatial for this optimized graph by running:'
+print '      $ python dnn_to_spatial.py ' + model_no_ext + '_opt2.pb'
